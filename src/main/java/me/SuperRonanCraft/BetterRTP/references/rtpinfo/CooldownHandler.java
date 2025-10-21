@@ -1,8 +1,8 @@
 package me.SuperRonanCraft.BetterRTP.references.rtpinfo;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -63,7 +63,7 @@ public class CooldownHandler {
         if (!enabled) return;
         PlayerData playerData = getData(player);
         if (cooldownByWorld) {
-            HashMap<World, CooldownData> cooldowns = playerData.getCooldowns();
+            Map<World, CooldownData> cooldowns = playerData.getCooldowns();
             CooldownData data = cooldowns.getOrDefault(world, new CooldownData(player.getUniqueId(), 0L));
             playerData.setRtpCount(playerData.getRtpCount() + 1);
             data.setTime(System.currentTimeMillis());
@@ -86,7 +86,7 @@ public class CooldownHandler {
     public CooldownData get(Player p, World world) {
         PlayerData data = getData(p);
         if (cooldownByWorld) {
-            HashMap<World, CooldownData> cooldownData = getData(p).getCooldowns();
+            Map<World, CooldownData> cooldownData = getData(p).getCooldowns();
             if (data != null)
                 return cooldownData.getOrDefault(world, null);
         } else if (data.getGlobalCooldown() > 0) {
