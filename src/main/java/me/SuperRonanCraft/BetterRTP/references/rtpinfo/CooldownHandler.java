@@ -1,8 +1,8 @@
 package me.SuperRonanCraft.BetterRTP.references.rtpinfo;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.annotation.Nullable;
 
@@ -26,7 +26,7 @@ public class CooldownHandler {
     @Getter boolean enabled, loaded, cooldownByWorld;
     @Getter private int defaultCooldownTime; //Global Cooldown timer
     private int lockedAfter; //Rtp's before being locked
-    private final List<Player> downloading = new ArrayList<>();
+    private final List<Player> downloading = new CopyOnWriteArrayList<>();
 
     public void load() {
         FileOther.FILETYPE config = FileOther.FILETYPE.CONFIG;
@@ -140,23 +140,31 @@ public class CooldownHandler {
     }
 
     public void loadPlayer(Player player) {
-        if (!isEnabled()) return;
-        downloading.add(player);
+        if (!isEnabled()) {
+          return;
+        }
+
         PlayerData playerData = getData(player);
         if (playerData == null) {
             return;
         }
 
-        if (getDatabaseWorlds() != null) //Per World enabled?
-            for (World world : Bukkit.getWorlds()) {
-                //Cooldowns
-                CooldownData cooldown = getDatabaseWorlds().getCooldown(player.getUniqueId(), world);
-                if (cooldown != null)
-                    playerData.getCooldowns().put(world, cooldown);
+        downloading.add(player);
+
+        try {
+            if (getDatabaseWorlds() != null) { //Per World enabled?
+                for (World world : Bukkit.getWorlds()) {
+                    //Cooldowns
+                    CooldownData cooldown = getDatabaseWorlds().getCooldown(player.getUniqueId(), world);
+                    if (cooldown != null)
+                        playerData.getCooldowns().put(world, cooldown);
+                }
             }
-        //Player Data
-        DatabaseHandler.getPlayers().setupData(playerData);
-        downloading.remove(player);
+            //Player Data
+            DatabaseHandler.getPlayers().setupData(playerData);
+        } finally {
+            downloading.remove(player);
+        }
     }
 
     public boolean loadedPlayer(Player player) {
