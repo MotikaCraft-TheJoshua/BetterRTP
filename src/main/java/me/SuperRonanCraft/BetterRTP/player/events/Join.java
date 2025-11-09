@@ -20,9 +20,7 @@ public class Join {
     static void event(PlayerJoinEvent e) {
         Player p = e.getPlayer();
         updater(p);
-        AsyncHandler.async(() -> {
-                getPl().getCooldowns().loadPlayer(p);
-            });
+        AsyncHandler.async(() -> getPl().getCooldowns().loadPlayer(p));
         rtpOnFirstJoin(p);
     }
 
@@ -42,10 +40,7 @@ public class Join {
     //RTP on first join
     private static void rtpOnFirstJoin(Player p) {
         if (getPl().getSettings().isRtpOnFirstJoin_Enabled() && !p.hasPlayedBefore())
-            HelperRTP.tp(p, Bukkit.getConsoleSender(),
-                    Bukkit.getWorld(getPl().getSettings().getRtpOnFirstJoin_World()),
-                    null, RTP_TYPE.JOIN, true, true);
-        //Fixed via @kazigk on Github
+            HelperRTP.tp(p, Bukkit.getConsoleSender(), Bukkit.getWorld(getPl().getSettings().getRtpOnFirstJoin_World()), null, RTP_TYPE.JOIN, true, true);
     }
 
     private static BetterRTP getPl() {
